@@ -2,10 +2,10 @@
 {
     using OpenQA.Selenium;
 
-    public class DropDownList : SimpleWidget
+    public class DropDownList : Widget
     {
-        public DropDownList(By by)
-            : base(by, "kendoDropDownList")
+        public DropDownList(IWebDriver webDriver, By by)
+            : base(webDriver, by, "kendoDropDownList")
         {
         }
     }

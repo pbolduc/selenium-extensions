@@ -4,8 +4,8 @@ namespace Selenium.Kendo
 
     public class RangeSlider : Widget
     {
-        public RangeSlider(By by)
-            : base(by, "kendoRangeSlider")
+        public RangeSlider(IWebDriver webDriver, By by)
+            : base(webDriver, by, "kendoRangeSlider")
         {
         }
     }

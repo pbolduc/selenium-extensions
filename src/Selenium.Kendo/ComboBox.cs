@@ -2,10 +2,10 @@
 {
     using OpenQA.Selenium;
 
-    public class ComboBox : SimpleWidget
+    public class ComboBox : Widget
     {
-        public ComboBox(By by)
-            : base(by, "kendoComboBox")
+        public ComboBox(IWebDriver webDriver, By by)
+            : base(webDriver, by, "kendoComboBox")
         {
         }
     }

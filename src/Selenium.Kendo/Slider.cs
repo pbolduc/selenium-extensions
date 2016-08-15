@@ -4,39 +4,39 @@ namespace Selenium.Kendo
 
     public class Slider : Widget
     {
-        public Slider(By by)
-            : base(by, "kendoSlider")
+        public Slider(IWebDriver webDriver, By by)
+            : base(webDriver, by, "kendoSlider")
         {
         }
 
-        public void Enable(IWebDriver driver)
+        public void Enable()
         {
             var js = $"{Target}.enable();";
-            ExecuteJavaScript(driver, js);
+            ExecuteJavaScript(js);
         }
 
-        public void Disable(IWebDriver driver)
+        public void Disable()
         {
             var js = $"{Target}.disable();";
-            ExecuteJavaScript(driver, js);
+            ExecuteJavaScript(js);
         }
 
-        public void Increment(IWebDriver driver)
+        public void Increment()
         {
             // find the element with k-button-increase class 
-            Click(driver, "k-button-increase");
+            Click("k-button-increase");
         }
 
-        public void Decrease(IWebDriver driver)
+        public void Decrease()
         {
             // find the element with k-button-decrease class 
-            Click(driver, "k-button-decrease");
+            Click("k-button-decrease");
         }
 
-        private void Click(IWebDriver driver, string @class)
+        private void Click(string @class)
         {
-            var button = ParentElement(driver).FindElement(By.ClassName(@class));
-            button.Click();
+            var button = Element.Parent().FindElement(By.ClassName(@class));
+            button?.Click();
         }
 }
 }

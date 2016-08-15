@@ -6,24 +6,22 @@ namespace Selenium.Kendo
 
     public class Grid : Widget
     {
-        public Grid(By by)
-            : base(by, "kendoGrid")
+        public Grid(IWebDriver webDriver, By by)
+            : base(webDriver, by, "kendoGrid")
         {
         }
 
-        public void SelectRow(IWebDriver driver, int row)
+        public void SelectRow(int row)
         {
             if (row < 0) throw new ArgumentOutOfRangeException(nameof(row), row, "row must be greater or equal to zero.");
 
             // see http://demos.telerik.com/kendo-ui/grid/api
-            var js = $"var row = {Target}.tbody.find('>tr:not(.k-grouping-row)').eq({row}); {Target}.select(row);";
-            ExecuteJavaScript(driver, js);
+            ExecuteJavaScript($"var row = {Target}.tbody.find('>tr:not(.k-grouping-row)').eq({row}); {Target}.select(row);");
         }
 
-        public void ClearSelection(IWebDriver driver)
+        public void ClearSelection()
         {
-            var js = $"{Target}.clearSelection();";
-            ExecuteJavaScript(driver, js);
+            ExecuteJavaScript($"{Target}.clearSelection();");
         }
     }
 }

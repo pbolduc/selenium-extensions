@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selenium.Kendo", "Selenium.Kendo\Selenium.Kendo.csproj", "{D0326BAF-2BF1-4B5A-8207-2A5A1692DB2D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeleniumExtensions.Tests", "SeleniumExtensions.Tests\SeleniumExtensions.Tests.csproj", "{D0E33759-5256-4EDB-9D45-892739333DF8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D0326BAF-2BF1-4B5A-8207-2A5A1692DB2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0326BAF-2BF1-4B5A-8207-2A5A1692DB2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0326BAF-2BF1-4B5A-8207-2A5A1692DB2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0E33759-5256-4EDB-9D45-892739333DF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0E33759-5256-4EDB-9D45-892739333DF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0E33759-5256-4EDB-9D45-892739333DF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0E33759-5256-4EDB-9D45-892739333DF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
