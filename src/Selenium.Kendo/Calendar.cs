@@ -4,11 +4,48 @@
     using System.Drawing;
     using System.Threading;
     using OpenQA.Selenium;
+    using Selenium.Extensions.Interfaces;
+
+    public class CssClass
+    {
+        public const string Link = "k-link";
+        public const string Icon = "k-icon";
+        public const string Warning = "k-warning";
+        public const string Menu = "k-menu";
+        public const string Popup = "k-popup";
+        public const string Group = "k-group";
+        public const string Header = "k-header";
+        public const string Footer = "k-footer";
+        public const string Tooltip = "k-tooltip";
+        public const string TooltipValidation = "k-tooltip-validation";
+
+        public const string Weekend = "k-weekend";
+        public const string OtherMonth = "k-other-month";
+
+        public const string NavFast = "k-nav-fast";
+        public const string NavPrev = "k-nav-prev";
+        public const string NavNext = "k-nav-next";
+        public const string NavToday = "k-nav-today";
+
+        // k-animation-container
+        // k-content
+        // k-state-disabled
+        // k-state-focused
+        // k-state-hover
+        // k-footer
+        // k-widget
+        // k-calendar
+        // k-combobox
+        // k-datepicker
+        // k-datetimepicker
+        // k-slider
+        // k-timepicker
+    }
 
     public class Calendar : Widget
     {
-        public Calendar(IWebDriver webDriver, By by)
-            : base(webDriver, by, "kendoCalendar")
+        public Calendar(ITestWebDriver driver, By by)
+            : base(driver, by, "kendoCalendar")
         {            
         }
 
@@ -17,32 +54,26 @@
         private const string DecadeView = "decade";
         private const string CenturyView = "century";
 
-        private const string otherMonth = "k-other-month";
-        private const string weekend = "k-weekend";
+        //private const string nav = ".//div/a";
+        //private const string cells = ".//table/tbody/tr[@role='row']/td[@role='gridcell']/a[@class='k-link']";
 
-        private const string otherMonthWeekend = otherMonth + " " + weekend;
+        private const string TodayCssSelector = "div." + CssClass.Footer + " > a." + CssClass.Link + "." + CssClass.NavToday;
+        private const string NextCssSelector = "div > a." + CssClass.Link + "." + CssClass.NavNext;
+        private const string PrevCssSelector = "div > a." + CssClass.Link + "." + CssClass.NavPrev;
+        private const string FastCssSelector = "div > a." + CssClass.Link + "." + CssClass.NavFast;
 
-        private const string prev = ".//div/a[@class='k-link k-nav-prev']";
-        private const string next = ".//div/a[@class='k-link k-nav-next']";
-        private const string fast = ".//div/a[@class='k-link k-nav-fast']";
-        private const string nav = ".//div/a";
 
-        private const string table = ".//table";
-        private const string cells = ".//table/tbody/tr[@role='row']/td[@role='gridcell']/a[@class='k-link']";
-
-        private const string today = ".//div[@class='k-footer']/a[@class='k-link k-nav-today']";
-
-        private const int weeksPerPage = 6;
+        private const int WeeksPerPage = 6;
 
         public void ClickDate(DateTime date)
         {
             var view = View;
             if (view == MonthView)
             {
-                var tableElement = Element.FindElement(By.XPath(table));
+                var tableElement = FindElement().FindElement(By.XPath(".//table"));
 
                 var startDate = GetDateAttribute(tableElement, "data-start");
-                var endDate = startDate.AddDays(weeksPerPage * 7 - 1);
+                var endDate = startDate.AddDays(WeeksPerPage * 7 - 1);
 
                 if (startDate <= date && date <= endDate)
                 {
@@ -124,29 +155,60 @@
             }
         }
 
+        /// <summary>
+        /// Gets the first date in the calendar.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">invalid view type</exception>
         private DateTime GetStart()
         {
             var view = View;
             if (view == MonthView)
             {
-                var element = Element.FindElement(By.XPath(table));
-                return GetDateAttribute(element, "data-start");
+                return GetMonthViewStart();
             }
-            else if (view == YearView)
-            {
-                var element = Element.FindElement(By.XPath(fast));
-                var year = int.Parse(element.Text);
-                return new DateTime(year, 1, 1);
-            }
-            else if (view == DecadeView || view == CenturyView)
-            {
-                IWebElement element  = Element.FindElements(By.XPath(nav))[1];
 
-                var year = int.Parse(element.Text.Substring(0, 4));
-                return new DateTime(year, 1, 1);
+            if (view == YearView)
+            {
+                return GetYearViewStart();
+            }
+
+            if (view == DecadeView)
+            {
+                return GetDecadeViewStart();
+            }
+
+            if (view == CenturyView)
+            {
+                return GetCenturyViewStart();
             }
 
             throw new InvalidOperationException($"invalid view type '{view ?? string.Empty}'.");
+        }
+
+        private DateTime GetMonthViewStart()
+        {
+            var element = FindElement().FindElement(By.XPath(".//table"));
+            return GetDateAttribute(element, "data-start");
+        }
+
+        private DateTime GetYearViewStart()
+        {
+            var element = FindElement().FindElement(By.CssSelector("div > a." + CssClass.NavFast));
+            var year = int.Parse(element.Text);
+            return new DateTime(year, 1, 1);
+        }
+
+        private DateTime GetDecadeViewStart()
+        {
+            IWebElement element = FindElement().FindElement(By.CssSelector(FastCssSelector));
+            var year = int.Parse(element.Text.Substring(0, 4));
+            return new DateTime(year, 1, 1);
+        }
+
+        private DateTime GetCenturyViewStart()
+        {
+            // same structure as decade view
+            return GetDecadeViewStart();
         }
 
         private bool SameYear(DateTime a, DateTime b)
@@ -170,13 +232,13 @@
 
             string xpath = $".//table/tbody/tr[@role='row']/td[@role='gridcell']/a[@class='k-link' and @data-value='{year}/{month}/{day}']";
 
-            var dayElement = Element.FindElement(By.XPath(xpath));
+            var dayElement = FindElement().FindElement(By.XPath(xpath));
             return dayElement;
         }
 
         public void ClickNavigateUp()
         {
-            var element = Element.FindElement(By.XPath(fast));
+            var element = FindElement().FindElement(By.CssSelector(FastCssSelector));
             element.Click();
             WaitForNavigation();
         }
@@ -198,7 +260,7 @@
 
         public void ClickPrevious()
         {
-            var element = Element.FindElement(By.XPath(prev));
+            var element = FindElement().FindElement(By.CssSelector(PrevCssSelector));
             element.Click();
         }
 
@@ -207,79 +269,110 @@
         /// </summary>
         public void ClickNext()
         {
-            var element = Element.FindElement(By.XPath(next));
+            var element = FindElement().FindElement(By.CssSelector(NextCssSelector));
             element.Click();
         }
 
         public void ClickToday()
         {
-            var element = Element.FindElement(By.XPath(today));
+            var element = FindElement().FindElement(By.CssSelector(TodayCssSelector));
             element.Click();
         }
 
         /// <summary>
         /// Returns the current view of the calendar: month, year, decade or century.
         /// </summary>
-        public string View => ExecuteJavaScript<string>($"return {Target}.view().name;");
+        public string View => (string)Driver.ExecuteScript(Scripts.Calendar_view_name, FindElement());
 
         private DateTime GetDateAttribute(IWebElement element, string attributeName)
         {
             var targetDate = element.GetAttribute(attributeName);
 
-            int year = int.Parse(targetDate.Substring(0, 4));
-
-            int month = Month(targetDate);
-
-            // single or double digit month?
-            int day = (targetDate[6] == '/')
-                ? int.Parse(targetDate.Substring(7))
-                : int.Parse(targetDate.Substring(8));
-
-            return new DateTime(year, month, day);
+            var date = DateParser.Parse(targetDate);
+            return date;
         }
-
-
-        private int Month(string dataValue)
-        {
-            var char5 = dataValue[5];
-
-            switch (char5)
-            {
-                case '0': return 1;
-                case '1':
-                {
-                    var char6 = dataValue[6];
-                    if (char6 == '/') return 2;
-                    if (char6 == '0') return 11;
-                    if (char6 == '1') return 12;
-                    throw new InvalidOperationException();
-                }
-                case '2': return 3;
-                case '3': return 4;
-                case '4': return 5;
-                case '5': return 6;
-                case '6': return 7;
-                case '7': return 8;
-                case '8': return 9;
-                case '9': return 10;
-                default:
-                    throw new InvalidOperationException();
-
-            }
-        }
-
+        
         private int ZoomAnimationTime()
         {
-            string js = $"var animation = {Target}.options.animation;if (animation) {{ return animation.vertical.duration; }} else {{ return 0; }}";
-            var value = ExecuteJavaScript<long>(js);
+            var value = (long)Driver.ExecuteScript(Scripts.Calendar_options_animation_vertical_duration, FindElement());
             return Convert.ToInt32(value);
         }
 
         private int NextPrevAnimationTime()
         {
-            string js = $"var animation = {Target}.options.animation;if (animation) {{ return animation.horizontal.duration; }} else {{ return 0; }}";
-            var value = ExecuteJavaScript<long>(js);
+            var value = (long)Driver.ExecuteScript(Scripts.Calendar_options_animation_horizontal_duration, FindElement());
             return Convert.ToInt32(value);
+        }
+    }
+
+    public static class DateParser
+    {
+        /// <summary>
+        /// Parses a date with format yyyy/m/d when m is javascript month 0-11.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static DateTime Parse(string value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            int year = ToInt32(value[0])*1000
+                       + ToInt32(value[1])*100
+                       + ToInt32(value[2])*10
+                       + ToInt32(value[3]);
+
+            int month = Month(value);
+
+            int day = (value[6] == '/')
+                ? int.Parse(value.Substring(7))
+                : int.Parse(value.Substring(8));
+
+            return new DateTime(year, month, day);
+        }
+
+        private static int ToInt32(char c)
+        {
+            return c - '0';
+        }
+
+        private static int Month(string value)
+        {
+            var char5 = value[5];
+
+            switch (char5)
+            {
+                case '0':
+                    return 1;
+                case '1':
+                {
+                    var char6 = value[6];
+                    if (char6 == '/') return 2;
+                    if (char6 == '0') return 11;
+                    if (char6 == '1') return 12;
+                    throw new InvalidOperationException();
+                }
+                case '2':
+                    return 3;
+                case '3':
+                    return 4;
+                case '4':
+                    return 5;
+                case '5':
+                    return 6;
+                case '6':
+                    return 7;
+                case '7':
+                    return 8;
+                case '8':
+                    return 9;
+                case '9':
+                    return 10;
+                default:
+                    throw new InvalidOperationException();
+            }
         }
     }
 }

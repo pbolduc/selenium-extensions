@@ -1,12 +1,13 @@
 namespace Selenium.Kendo
 {
     using OpenQA.Selenium;
+    using Selenium.Extensions.Interfaces;
 
     public static class KendoExtensions
     {
-        public static DatePicker KendoDatePicker(this IWebDriver webDriver, By by)
+        public static DatePicker KendoDatePicker(this ITestWebDriver driver, By by)
         {
-            return new DatePicker(webDriver, by);
+            return new DatePicker(driver, by);
         }
     }
 }

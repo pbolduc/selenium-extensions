@@ -1,0 +1,3 @@
+[submodule "src/Selenium.Extensions"]
+	path = src/Selenium.Extensions
+	url = https://github.com/pbolduc/Selenium.Extensions

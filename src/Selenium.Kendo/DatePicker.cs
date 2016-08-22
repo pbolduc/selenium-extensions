@@ -3,78 +3,83 @@ namespace Selenium.Kendo
     using System;
     using System.Collections.ObjectModel;
     using OpenQA.Selenium;
-
+    using Selenium.Extensions.Interfaces;
 
 
     public class DatePicker : Widget
     {
         public IDatePickerApi Api { get; }
 
-        public DatePicker(IWebDriver webDriver, By by)
-            : base(webDriver, by, "kendoDatePicker")
+        public DatePicker(ITestWebDriver driver, By by)
+            : base(driver, by, "kendoDatePicker")
         {
             Api = new DatePickerApi(this);
         }
 
         public Calendar GetCalendar()
         {
-            var div = ExecuteJavaScript<ReadOnlyCollection<IWebElement>>($"return {Target}.dateView.div;");
-            
+            var div = (ReadOnlyCollection<IWebElement>) Driver.ExecuteScript(Scripts.DatePicker_dateView_div, FindElement());          
             var calendarContainer = div[0];
             var calendarElement = calendarContainer.FindElement(By.XPath(".//div[@class='k-widget k-calendar']"));
 
-            Calendar calendar = new Calendar(WebDriver, By.Id(calendarElement.GetAttribute("id")));
+            Calendar calendar = new Calendar(Driver, By.Id(calendarElement.GetAttribute("id")));
             return calendar;
         }
 
         public void ClickCalendarIcon()
         {
-            var element = Element.NextSibling("span[@class='k-select']");
+            var element = FindElement().NextSibling("span[@class='k-select']");
             element.Click();
         }
 
-        public virtual void SetValue(DateTime value, string format)
-        {
-            string stringValue = FormatDate(value, format);
-            SetValue(stringValue);
-        }
+        //public virtual void SetValue(DateTime value, string format)
+        //{
+        //    string stringValue = FormatDate(value, format);
+        //    SetValue(stringValue);
+        //}
 
-        public bool PopupCalendarVisible => ExecuteJavaScript<bool>($"return {Target}.dateView.popup.visible();");
-
-        public string Format => ExecuteJavaScript<string>($"return {Target}.options.format;");
-        public string Depth => ExecuteJavaScript<string>($"return {Target}.options.depth;");
-        public string Start => ExecuteJavaScript<string>($"return {Target}.options.start;");
-        public string Footer => ExecuteJavaScript<string>($"return {Target}.options.footer;");
-        public string Prefix => ExecuteJavaScript<string>($"return {Target}.options.prefix;");
+        public bool PopupCalendarVisible => (bool)Driver.ExecuteScript(Scripts.DatePicker_dateView_popup_visible, FindElement());
+        public string Format => (string)Driver.ExecuteScript(Scripts.DatePicker_options_format, FindElement());
+        public string Depth => (string)Driver.ExecuteScript(Scripts.DatePicker_options_depth, FindElement());
+        public string Start => (string)Driver.ExecuteScript(Scripts.DatePicker_options_start, FindElement());
+        public string Footer => (string)Driver.ExecuteScript(Scripts.DatePicker_options_footer, FindElement());
+        public string Prefix => (string)Driver.ExecuteScript(Scripts.DatePicker_options_prefix, FindElement());
 
         public DateTime Min
         {
-            get { return AsDate($"return {Target}.min().toISOString();"); }
-            set
+            get
             {
-                var iso = value.ToString("O");
-                ExecuteJavaScript($"var min = new Date('{iso}');{Target}.min(min);");
+                var o = (long)Driver.ExecuteScript(Scripts.DatePicker_min_get, FindElement());                
+                return KendoDate.Epoch.AddMilliseconds(o);
             }
         }
 
         public DateTime Max
         {
-            get { return AsDate($"return {Target}.max().toISOString();"); }
-            set
+            get
             {
-                var iso = value.ToString("O");
-                ExecuteJavaScript($"var max = new Date('{iso}');{Target}.max(max);");
+                var o = (long)Driver.ExecuteScript(Scripts.DatePicker_max_get, FindElement());
+                return KendoDate.Epoch.AddMilliseconds(o);
+            }
+        }
+
+        public DateTime Value
+        {
+            get
+            {
+                var o = (long)Driver.ExecuteScript(Scripts.DatePicker_value_get, FindElement());
+                return KendoDate.Epoch.AddMilliseconds(o);
             }
         }
 
         private void JavaScriptOpen()
         {
-            ExecuteJavaScript($"{Target}.open();");
+            Driver.ExecuteScript(Scripts.DatePicker_open, FindElement());
         }
 
         private void JavaScriptClose()
         {
-            ExecuteJavaScript($"{Target}.close();");
+            Driver.ExecuteScript(Scripts.DatePicker_close, FindElement());
         }
 
         private string FormatDate(DateTime value, string format)

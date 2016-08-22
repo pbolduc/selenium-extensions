@@ -61,7 +61,13 @@
     <Compile Include="IHideObjectMembers.cs" />
     <Compile Include="KendoExtensions.cs" />
     <Compile Include="RangeSlider.cs" />
+    <Compile Include="Scripts.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Scripts.resx</DependentUpon>
+    </Compile>
     <Compile Include="Slider.cs" />
+    <Compile Include="KendoDate.cs" />
     <Compile Include="WebElementExtensions.cs" />
     <Compile Include="Widget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,7 +75,31 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Selenium.Extensions\Selenium.Extensions\Selenium.Extensions.csproj">
+      <Project>{8470cfe2-ff74-4c2e-916b-550f23181c94}</Project>
+      <Name>Selenium.Extensions</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Scripts.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\DatePickerWrapper.js">
+      <DependentUpon>DatePickerWrapper.ts</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Resources\DatePickerWrapper.ts" />
+    <TypeScriptCompile Include="Resources\jquery.d.ts" />
+    <TypeScriptCompile Include="Resources\kendo.all.d.ts" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
